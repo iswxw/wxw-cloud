@@ -21,6 +21,7 @@
     <!--管理子模块依赖版本-->
     <modules>
         <module>wxw-docker</module>
+        <module>wxw-k8s</module>
     </modules>
 
     <!--项目版本依赖-->

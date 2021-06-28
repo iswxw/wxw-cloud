@@ -15,7 +15,7 @@
 
 ### 1. docker-maven-plugin 
 
-这里我们要测试 Java Maven 项目用 docker-maven 插件打镜像，上传镜像等操作，所以需要先安装一下 Docker、Maven、Java，这里忽略安装过程
+这里我们要测试 Java Maven 项目用 docker-maven 插件打镜像，上传镜像等操作，所以需要先安装一下 Docker、Maven、Java，这里忽略安装过程，简而言之，此插件将maven和docker进行集成。
 
 #### 1.1 配置 DOCKER_HOST
 
@@ -197,6 +197,10 @@ mvn clean package docker:build -DpushImageTags -DdockerImageTags=imageTag_1 -Ddo
 </build>
 ```
 
+相关文章
+
+1. [dockerfile-maven-plugin极简教程](https://www.jb51.net/article/197299.htm) 
+
 ### 2. Idea Docker 插件
 
 <img src="asserts/2bf99304c67336926ec3bf887b2cf37f.png" alt="img" style="zoom:50%;" /> 
@@ -209,19 +213,35 @@ mvn clean package docker:build -DpushImageTags -DdockerImageTags=imageTag_1 -Ddo
 
 > 导读：[Idea 打包项目实现Docker镜像部署服务器](https://blog.csdn.net/qq_41893274/article/details/108888343) 
 
-#### 3.1 创建docker镜像
+#### 3.1 Docker 开启远程访问
+
+```bash
+[root@izwz9eftauv7x69f5jvi96z docker]# vim /usr/lib/systemd/system/docker.service
+#修改ExecStart这行
+ExecStart=/usr/bin/dockerd  -H tcp://0.0.0.0:2375  -H unix:///var/run/docker.sock
+#重新加载配置文件
+[root@izwz9eftauv7x69f5jvi96z docker]# systemctl daemon-reload    
+#重启服务
+[root@izwz9eftauv7x69f5jvi96z docker]# systemctl restart docker.service 
+#查看端口是否开启
+[root@izwz9eftauv7x69f5jvi96z docker]# netstat -nlpt
+#直接curl看是否生效
+[root@izwz9eftauv7x69f5jvi96z docker]# curl http://127.0.0.1:2375/info
+```
+
+#### 3.2 创建docker镜像
 
 <img src="asserts/30cd86c7c613d67012ab2cb550f0234f.png" alt="img" style="zoom:50%;" /> 
 
-#### 3.2 执行镜像构建
+#### 3.3 执行镜像构建
 
 <img src="asserts/cbced81d9335eb9645704aebd38b2de0.png" alt="img" style="zoom:50%;" /> 
 
-#### 3.3 启动镜像
+#### 3.4 启动镜像
 
 <img src="asserts/1f29426f049dbecb7a6a7bde9ba5e696.png" alt="img" style="zoom:67%;" />  
 
-#### 3.4 发布镜像
+#### 3.5 发布镜像
 
 ![img](asserts/ed81122b91cf7c7e08865bfac4d9febf.png) 
 
@@ -237,7 +257,7 @@ docker run -p 28080:8080 --name wwx wuweixiang/demo:1.0
 2.-p 28080:8080 将docker容器的8080端口映射到服务器上的28080端口
 ```
 
-#### 3.5 客户端访问
+#### 3.6 客户端访问
 
 ![img](asserts/f8df5f5bbfdd7a20e75be133466c6b0b.png) 
 
