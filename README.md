@@ -8,7 +8,7 @@
 | 框架技术                             | 当前使用版本  | GitHub 地址                                                |
 | ------------------------------------ | ------------- | ---------------------------------------------------------- |
 | ` spring-boot-dependencies`          | 2.5.2         | https://github.com/spring-projects/spring-boot             |
-| ` spring-cloud-dependencies`         | 2020.0.3      | https://github.com/spring-projects/spring-cloud [维护] |
+| ` spring-cloud-dependencies`         | 2020.0.3      | https://github.com/spring-projects/spring-cloud |
 | ` spring-cloud-alibaba-dependencies` | 2.2.5.RELEASE | https://github.com/alibaba/spring-cloud-alibaba            |
 
 #### 1.2 版本选型
