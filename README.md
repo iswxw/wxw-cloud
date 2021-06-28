@@ -15,8 +15,6 @@
 
 - Spring Cloud Build 是 Spring Cloud 用于插件和依赖管理的通用实用程序项目。查看更多点击 [此处](https://github.com/spring-cloud/spring-cloud-build) 
 
-
-
 相关文章
 
 - [版本对照参考地址](https://start.spring.io/actuator/info)：https://start.spring.io/actuator/info

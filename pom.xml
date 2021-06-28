@@ -72,6 +72,20 @@
         </dependencies>
     </dependencyManagement>
 
+    <!--全局依赖-->
+    <dependencies>
+        <!--web-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!--test-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+    </dependencies>
+
     <!--导入仓库-->
     <repositories>
         <!--阿里云中央仓库-->
@@ -88,4 +102,5 @@
             </snapshots>
         </repository>
     </repositories>
+
 </project>
