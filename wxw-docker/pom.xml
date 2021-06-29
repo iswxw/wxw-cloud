@@ -17,7 +17,14 @@
         <!--docker镜像前缀-->
         <docker.image.prefix>wxw</docker.image.prefix>
     </properties>
-
+    <!--maven 依赖-->
+    <dependencies>
+        <!--lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
     <!--插件管理-->
     <build>
         <plugins>
