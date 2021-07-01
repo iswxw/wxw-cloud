@@ -22,6 +22,7 @@
     <modules>
         <module>wxw-docker</module>
         <module>wxw-k8s</module>
+        <module>wxw-etcd</module>
     </modules>
 
     <!--项目版本依赖-->
