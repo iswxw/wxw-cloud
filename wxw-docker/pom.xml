@@ -55,7 +55,7 @@
                 <configuration>
                     <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
                     <!--dockerfile 文件所在目录-->
-                    <dockerDirectory>${basedir}/docker</dockerDirectory>
+                    <dockerDirectory>/</dockerDirectory>
                     <!-- 这里是复制 jar 包到 docker 容器指定目录配置 -->
                     <resources>
                         <resource>

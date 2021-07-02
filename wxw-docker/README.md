@@ -83,27 +83,49 @@ ExecStart=/usr/bin/dockerd  -H tcp://0.0.0.0:2375  -H unix:///var/run/docker.soc
 **（2）使用 Dockerfile 构建** 
 
 ```xml
-<build>
-    <plugins>
-         <plugin>
-            <groupId>com.spotify</groupId>
-            <artifactId>docker-maven-plugin</artifactId>
-            <version>1.0.0</version>
-            <configuration>
-                <imageName>mavendemo</imageName>
-                <dockerDirectory>${basedir}/docker</dockerDirectory> <!-- 指定 Dockerfile 路径-->
-                <!-- 这里是复制 jar 包到 docker 容器指定目录配置，也可以写到 Docokerfile 中 -->
-                <resources>
-                    <resource>
-                        <targetPath>/ROOT</targetPath>
-                        <directory>${project.build.directory}</directory>
-                        <include>${project.build.finalName}.jar</include>
-                    </resource>
-                </resources>
-            </configuration>
-        </plugin>   
-    </plugins>
-</build>
+    <!--插件管理-->
+    <build>
+        <plugins>
+            <!--maven 插件管理-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.3.3.RELEASE</version>
+                <!--加入下面两项配置 父子聚合项目中需要将子包打包为jar包时使用-->
+                <executions>
+                    <execution>
+                        <goals>
+                            <!--重新打包-->
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--包含系统范围-->
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+            </plugin>
+            <!--docker 插件-->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+                    <!--dockerfile 文件所在目录-->
+                    <dockerDirectory>/</dockerDirectory>
+                    <!-- 这里是复制 jar 包到 docker 容器指定目录配置 -->
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 ```
 
 > ${basedir}/docker/Dockerfile 配置 
@@ -119,17 +141,17 @@ MAINTAINER Java半颗糖 <weixiaowei01@qq.com>
 VOLUME /tmp
 
 #复制上下文目录下的target/demo-1.0.0.jar 到容器里
-ADD "target/spring-docker-1.0-SNAPSHOT.jar" "spring-docker-1.0.jar"
+ADD "target/wxw-docker-1.0-SNAPSHOT.jar" "wxw-docker-1.0-SNAPSHOT.jar"
 
 #bash方式执行，使demo-1.0.0.jar可访问
 #RUN新建立一层，在其上执行这些命令，执行结束后， commit 这一层的修改，构成新的镜像。
-RUN bash -c "touch /spring-docker-1.0.jar"
+RUN bash -c "touch /wxw-docker-1.0-SNAPSHOT.jar"
 
 #声明运行时容器提供服务端口，这只是一个声明，在运行时并不会因为这个声明应用就会开启这个端口的服务
 EXPOSE 10086
 
 #指定容器启动程序及参数   <ENTRYPOINT> "<CMD>"
-ENTRYPOINT ["java","-jar","spring-docker-1.0.jar"]
+ENTRYPOINT ["java","-jar","wxw-docker-1.0-SNAPSHOT.jar"]
 ```
 
 以上两种方式执行docker:build效果是一样的，执行输出过程大致如下：
@@ -201,15 +223,7 @@ mvn clean package docker:build -DpushImageTags -DdockerImageTags=imageTag_1 -Ddo
 
 1. [dockerfile-maven-plugin极简教程](https://www.jb51.net/article/197299.htm) 
 
-### 2. Idea Docker 插件
-
-<img src="asserts/2bf99304c67336926ec3bf887b2cf37f.png" alt="img" style="zoom:50%;" /> 
-
-#### 2.1 启用 docker 
-
-<img src="asserts/235764d2132de0754d296b8445cad49d.png" alt="img" style="zoom:50%;" /> 
-
-### 3. SpringBoot项目docker部署
+### 2. SpringBoot项目docker部署
 
 > 导读：[Idea 打包项目实现Docker镜像部署服务器](https://blog.csdn.net/qq_41893274/article/details/108888343) 
 
@@ -229,23 +243,74 @@ ExecStart=/usr/bin/dockerd  -H tcp://0.0.0.0:2375  -H unix:///var/run/docker.soc
 [root@izwz9eftauv7x69f5jvi96z docker]# curl http://127.0.0.1:2375/info
 ```
 
+- 本地容器不需要上面操作
+
 #### 3.2 创建docker镜像
 
-<img src="asserts/30cd86c7c613d67012ab2cb550f0234f.png" alt="img" style="zoom:50%;" /> 
+<img src="asserts/image-20210702104813771.png" alt="image-20210702104813771" style="zoom: 33%;" />  
 
 #### 3.3 执行镜像构建
 
-<img src="asserts/cbced81d9335eb9645704aebd38b2de0.png" alt="img" style="zoom:50%;" /> 
+<img src="asserts/image-20210702105125952.png" alt="image-20210702105125952" style="zoom:50%;" /> 
 
-#### 3.4 启动镜像
+运行日志：
 
-<img src="asserts/1f29426f049dbecb7a6a7bde9ba5e696.png" alt="img" style="zoom:67%;" />  
+```bash
+Deploying 'wxw-docker1.0 Dockerfile: wxw-docker/Dockerfile'...
+Building image...
+Preparing build context archive...
+[==================================================>]33/33 files
+Done
+
+Sending build context to Docker daemon...
+[==================================================>] 29.77MB
+Done
+
+Step 1/7 : FROM java:8
+ ---> d23bdf5b1b1b
+Step 2/7 : MAINTAINER Java半颗糖 <weixiaowei01@qq.com>
+ ---> Using cache
+ ---> a6cae116053e
+Step 3/7 : VOLUME /tmp
+ ---> Using cache
+ ---> 2e94fcb3a81b
+Step 4/7 : ADD "target/wxw-docker-1.0-SNAPSHOT.jar" "wxw-docker-1.0-SNAPSHOT.jar"
+ ---> Using cache
+ ---> cd7ba97ccb31
+Step 5/7 : RUN bash -c "touch /wxw-docker-1.0-SNAPSHOT.jar"
+ ---> Using cache
+ ---> e5bef705c194
+Step 6/7 : EXPOSE 10086
+ ---> Using cache
+ ---> bc7574263f96
+Step 7/7 : ENTRYPOINT ["java","-jar","wxw-docker-1.0-SNAPSHOT.jar"]
+ ---> Using cache
+ ---> f1b524b8e818
+
+Successfully built f1b524b8e818
+Successfully tagged wxw-docker1.0:latest
+Creating container...
+Container Id: 9abb071ad151cb50df2077bff906b38da9b3a3566076ad09629aaaf3e9cd4685
+
+```
+
+#### 3.4 通过镜像启动一个容器
+
+通过dockerfile 运行dockerfile
+
+<img src="asserts/image-20210702105316028.png" alt="image-20210702105316028" style="zoom:50%;" /> 
+
+运行后该目录下新增一个容器
+
+<img src="asserts/image-20210702105530755.png" alt="image-20210702105530755" style="zoom: 33%;" /> 
+
+容器相关操作：
+
+<img src="asserts/image-20210702105657606.png" alt="image-20210702105657606" style="zoom:50%;" /> 
 
 #### 3.5 发布镜像
 
-![img](asserts/ed81122b91cf7c7e08865bfac4d9febf.png) 
-
-![img](asserts/e465ef00303d64508b12a8131dbcfc7e.png) 
+<img src="asserts/image-20210702105742201.png" alt="image-20210702105742201" style="zoom:50%;" /> 
 
 也可以直接用在docker客户端上直接执行：
 
@@ -259,7 +324,7 @@ docker run -p 28080:8080 --name wwx wuweixiang/demo:1.0
 
 #### 3.6 客户端访问
 
-![img](asserts/f8df5f5bbfdd7a20e75be133466c6b0b.png) 
+<img src="asserts/image-20210702105953114.png" alt="image-20210702105953114" style="zoom:50%;" /> 
 
 相关文章
 
